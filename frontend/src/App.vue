@@ -1,10 +1,8 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div>
-    My App
+    <RouterView />
   </div>
-    
-</template>
 
+</template>
