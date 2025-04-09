@@ -50,53 +50,67 @@ app.get('/users', async (req: Request, res: Response): Promise<any> => {
 app.post('/register-user', async (req: Request, res: Response): Promise<any> => {
     try {
         if (!req.is('application/json')) {
-            return res.status(400).json({ error: 'Content-Type must be application/json' });
+            return res.status(400).json({ error: 'Please send data in JSON format' });
         }
 
         const { name, email } = req.body;
 
         if (!name || !email) {
             return res.status(400).json({
-                error: 'Name and email are required',
+                error: 'Both name and email are required to register',
                 received: req.body
             });
         }
 
         const userId = email.replace(/[^0-9a-zA-Z_-]/g, '_');
-        const userResponse = await queryUsersWithRetry({ id: { $eq: userId } });
 
-        if (!userResponse.users.length) {
-            await chatClient.upsertUser({
-                id: userId,
-                name: name,
-                email: email,
-                role: 'user',
+        try {
+            const userResponse = await queryUsersWithRetry({ id: { $eq: userId } });
+
+            if (!userResponse.users.length) {
+                try {
+                    await chatClient.upsertUser({
+                        id: userId,
+                        name: name,
+                        email: email,
+                        role: 'user',
+                    });
+                } catch (streamError) {
+                    console.warn('Stream Chat user creation warning:', streamError);
+                }
+            }
+
+            const user_exist = await db
+                .select()
+                .from(users)
+                .where(eq(users.userId, userId));
+
+            if (!user_exist.length) {
+                console.log(`Registering new user: ${userId}`);
+                await db.insert(users).values({ userId, name, email });
+            }
+
+            return res.status(200).json({
+                userId,
+                name,
+                email,
+                message: 'Registration successful'
+            });
+
+        } catch (dbError) {
+            console.error('Database error:', dbError);
+            return res.status(500).json({
+                error: 'Account created but database update failed',
+                details: 'You can still chat, but history may not be saved'
             });
         }
-
-        const user_exist = await db
-            .select()
-            .from(users)
-            .where(eq(users.userId, userId));
-
-        if (!user_exist.length) {
-            console.log(`User ${userId} not found. Adding to database...`);
-            await db.insert(users).values({ userId, name, email });
-        }
-
-        return res.status(200).json({
-            userId,
-            name,
-            email,
-            message: 'User registered successfully'
-        });
 
     } catch (error: unknown) {
         const err = error instanceof Error ? error : new Error(String(error));
         console.error('Registration error:', err);
         return res.status(500).json({
-            error: 'Failed to register user',
-            details: err.message
+            error: 'Registration service unavailable',
+            details: 'Please try again later or contact support'
         });
     }
 });

@@ -15,24 +15,20 @@ if (!userStore.userId) {
 }
 
 const formatMessage = (text: string) => {
-  if (!text) return '';
-  
   return text
-    .replace(/\n/g, '<br>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`{3}(.*?)`{3}/gs, '<pre class="bg-gray-700 p-2 rounded my-2 overflow-x-auto"><code>$1</code></pre>')
-    .replace(/`(.*?)`/g, '<code class="bg-gray-700 px-1 rounded">$1</code>')
-    .replace(/(?:^|\n)- (.*?)(?:\n|$)/g, '<li class="ml-4">$1</li>')
-    .replace(/(?:^|\n)(\d+)\. (.*?)(?:\n|$)/g, '<li class="ml-4">$1. $2</li>');
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+    .replace(/`{3}([\s\S]*?)`{3}/g, '<pre class="bg-gray-800 rounded p-3 my-2 overflow-x-auto"><code>$1</code></pre>')
+    .replace(/`(.*?)`/g, '<code class="bg-gray-800 px-1.5 py-0.5 rounded text-sm">$1</code>')
+    .replace(/\n/g, '<br>');
 };
 
 const scrollToBottom = () => {
   nextTick(() => {
-    const chatContainer = document.getElementById('chat-container');
-    if (chatContainer) {
-      chatContainer.scrollTo({
-        top: chatContainer.scrollHeight,
+    const container = document.getElementById('chat-container');
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
         behavior: 'smooth'
       });
     }
@@ -47,28 +43,37 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col h-screen bg-gray-900 text-white">
+  <div class="flex flex-col h-screen bg-gray-900 text-gray-100">
     <Header />
-
-    <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 pb-20">
-      <div v-for="(msg, index) in chatStore.messages" :key="index" class="flex items-start"
-        :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
-        <div v-html="formatMessage(msg.content)" class="max-w-xs px-4 py-2 rounded-lg md:max-w-md" :class="msg.role === 'user'
-          ? 'bg-blue-600 text-white'
-          : 'bg-gray-700 text-white'
-          "></div>
+    
+    <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-6 pb-24">
+      <div v-for="(msg, index) in chatStore.messages" :key="index" 
+           class="flex" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
+        <div :class="msg.role === 'user' 
+          ? 'bg-indigo-600 text-white rounded-br-none'
+          : 'bg-gray-700 rounded-bl-none'
+          " class="max-w-[85%] lg:max-w-[65%] px-4 py-3 rounded-lg relative">
+          
+          <div v-if="msg.role === 'ai'" class="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          
+          <div v-html="formatMessage(msg.content)" class="prose prose-invert max-w-none"></div>
+        </div>
       </div>
+      
       <div v-if="chatStore.isLoading" class="flex justify-start">
-        <div class="bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center">
-          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Thinking...
+        <div class="bg-gray-800 px-4 py-3 rounded-lg flex items-center space-x-2">
+          <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
+          <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce delay-100"></div>
+          <div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce delay-200"></div>
+          <span class="ml-2">Thinking...</span>
         </div>
       </div>
     </div>
-
+    
     <ChatInput @send="chatStore.sendMessage" />
   </div>
 </template>
