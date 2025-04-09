@@ -39,7 +39,6 @@ PostgreSQL (Neon) · Drizzle ORM
    git clone https://github.com/your-username/smart-talk.git
    cd smart-talk
    ```
-
 2.Install dependencies:
 
   ```sh
@@ -114,7 +113,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any questions or issues, please open an issue on the GitHub repository or contact the project maintainer at [2dileshbisen@gmail.com].
+For any questions or issues, please open an issue on the GitHub repository or contact the project maintainer at [2dileshbisen@gmail.com](2dileshbisen@gmail.com).
 
 ## Acknowledgments
 
