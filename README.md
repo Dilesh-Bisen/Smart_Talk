@@ -1,10 +1,8 @@
 # Smart Talk 💬✨
 
-[[Live Demo](https://smart-talk.vercel.app/)]  
+[Live Demo](https://smart-talk.vercel.app/)
 
 Smart Talk is an AI-powered conversational application that provides intelligent chat capabilities with context awareness. Built with Vue, TypeScript, and cutting-edge AI technologies.
-
-![App Screenshot](#) *(Add screenshot path later)*
 
 ## Key Features
 
@@ -69,10 +67,14 @@ PostgreSQL (Neon) · Drizzle ORM
 
   ```sh
   # Backend
-  cd backend && npm run dev
-  
+  cd backend
+  npm run dev
+  ```
+
+  ```sh
   # Frontend (in separate terminal)
-  cd frontend && npm run dev
+  cd frontend
+  npm run dev
   ```
 
 Usage
@@ -93,8 +95,14 @@ Project Structure
   └── README.md        # This file
   ```
 
-License
-Distributed under the MIT License. See LICENSE for more information.
+## License
 
-Contact
-Dilesh Bisen - - 2dileshbisen@email.com
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+
+## Contact
+
+For any questions or issues, please open an issue on the GitHub repository or contact the project maintainer at [2dileshbisen@gmail.com].
+
+## Acknowledgments
+
+This project was designed and developed by Dilesh Bisen.
