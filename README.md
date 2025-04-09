@@ -34,12 +34,13 @@ PostgreSQL (Neon) · Drizzle ORM
 - PostgreSQL database
 
 ### Installation
-1. Clone the repository:
+
+1. **Clone the repository:**
    ```sh
    git clone https://github.com/your-username/smart-talk.git
    cd smart-talk
    ```
-2.Install dependencies:
+2. **Install dependencies:**
 
   ```sh
   # Frontend
@@ -60,7 +61,7 @@ PostgreSQL (Neon) · Drizzle ORM
   npx tsc --init
   ```
 
-3. Set up environment variables:
+3. **Set up environment variables:**
 
   ```sh
   # Frontend (.env)
@@ -75,7 +76,7 @@ PostgreSQL (Neon) · Drizzle ORM
   DATABASE_URL=your_db_url
   ```
 
-4. Run the development servers:
+4. **Run the development servers:**
 
   ```sh
   # Backend
@@ -89,13 +90,13 @@ PostgreSQL (Neon) · Drizzle ORM
   npm run dev
   ```
 
-Usage
+## Usage
 1. Register with your name and email
 2. Start chatting with the AI assistant
 3. Continue conversations - The AI remembers context
 4. View history - All chats are saved in your profile
 
-Project Structure
+## Project Structure
   ```sh
   smart-talk/
   ├── backend/         # Node.js API server
@@ -113,7 +114,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any questions or issues, please open an issue on the GitHub repository or contact the project maintainer at [2dileshbisen@gmail.com](2dileshbisen@gmail.com).
+For any questions or issues, please open an issue on the GitHub repository or contact the project maintainer at [2dileshbisen@gmail.com].
 
 ## Acknowledgments
 
