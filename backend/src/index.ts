@@ -101,7 +101,7 @@ app.post('/register-user', async (req: Request, res: Response): Promise<any> => 
     }
 });
 
-app.post('/user-chat', async (req: Request, res: Response): Promise<any> => {
+app.post('/user-chats', async (req: Request, res: Response): Promise<any> => {
     const { message, userId } = req.body;
 
     if (!message || !userId) {
@@ -134,13 +134,25 @@ app.post('/user-chat', async (req: Request, res: Response): Promise<any> => {
 
         await db.insert(chats).values({ userId, message, reply: response });
 
+        const botUserId = 'gemini_bot'; 
+        const botUserRole = 'user';
+        const botUserResponse = await queryUsersWithRetry({ id: botUserId });
+
+        if (!botUserResponse.users.length) {
+            await chatClient.upsertUser({
+                id: botUserId,
+                name: 'Gemini Bot',
+                role: botUserRole,
+            });
+        }
+
         const channel = chatClient.channel('messaging', `chat-${userId}`, {
             name: 'Gemini Chat',
-            created_by_id: 'Gemini Bot',
+            created_by_id: botUserId,
         });
 
         await channel.create();
-        await channel.sendMessage({ text: response, user_id: 'Gemini Bot' });
+        await channel.sendMessage({ text: response, user_id: botUserId });
 
         return res.status(200).json({
             response,
@@ -157,6 +169,8 @@ app.post('/user-chat', async (req: Request, res: Response): Promise<any> => {
     }
 });
 
+
+
 app.post('/chat-history', async (req: Request, res: Response): Promise<any> => {
 
     const { userId } = req.body;
@@ -172,7 +186,7 @@ app.post('/chat-history', async (req: Request, res: Response): Promise<any> => {
             .where(eq(chats.userId, userId));
 
         res.status(200).json({ messages: chatHistory });
-        
+
     } catch (error) {
         console.log('Failed to fetch chat history:', error);
         res.status(500).json({ error: 'Something went wrong. Please try again later.' });
