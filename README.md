@@ -44,10 +44,21 @@ PostgreSQL (Neon) · Drizzle ORM
 
   ```sh
   # Frontend
-  cd frontend && npm install
+  npx create-vite frontend   
+  cd frontend
+  npm install            
+  npm i vue-router pinia pinia-plugin-persistedstate axios
+  npm i -D tailwindcss @tailwindcss/vite
+  ```
 
-  # Backend 
-  cd ../backend && npm install
+  ```sh
+  # Backend
+  mkdir backend
+  cd backend 
+  npm init -y
+  npm install express cors dotenv stream-chat openai
+  npm install -D typescript tsx @types/node @types/express @types/cors
+  npx tsc --init
   ```
 
 3. Set up environment variables:
@@ -55,7 +66,9 @@ PostgreSQL (Neon) · Drizzle ORM
   ```sh
   # Frontend (.env)
   VITE_API_URL=http://localhost:3000
-  
+  ```
+
+  ```sh
   # Backend (.env)
   GEMINI_API_KEY=your_key
   STREAM_API_KEY=your_key
