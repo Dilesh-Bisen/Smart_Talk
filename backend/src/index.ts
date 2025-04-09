@@ -110,7 +110,6 @@ app.post('/user-chats', async (req: Request, res: Response): Promise<any> => {
 
     try {
         const userResponse = await queryUsersWithRetry({ id: userId });
-
         if (!userResponse.users.length) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -119,13 +118,31 @@ app.post('/user-chats', async (req: Request, res: Response): Promise<any> => {
             .select()
             .from(users)
             .where(eq(users.userId, userId));
-
         if (!user_exist.length) {
-            return res.status(404).json({ error: 'User ${userId} not found. Please register first.' });
+            return res.status(404).json({ error: `User ${userId} not found. Please register first.` });
         }
 
+        const chatHistory = await db
+            .select()
+            .from(chats)
+            .where(eq(chats.userId, userId))
+            .orderBy(chats.createdAt)
+            .limit(5);
+
+        const conversation = chatHistory.flatMap(chat => [
+            { role: "user", parts: [{ text: chat.message }] },
+            { role: "model", parts: [{ text: chat.reply }] }
+        ]);
+
+        conversation.push({ role: "user", parts: [{ text: message }] });
+
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: message }] }]
+            contents: conversation,
+            generationConfig: {
+                maxOutputTokens: 2000,
+                temperature: 0.9,
+                topP: 0.1,
+            }
         });
 
         const response = await result.response.text();
@@ -134,15 +151,14 @@ app.post('/user-chats', async (req: Request, res: Response): Promise<any> => {
 
         await db.insert(chats).values({ userId, message, reply: response });
 
-        const botUserId = 'gemini_bot'; 
-        const botUserRole = 'user';
+        const botUserId = 'gemini_bot';
         const botUserResponse = await queryUsersWithRetry({ id: botUserId });
 
         if (!botUserResponse.users.length) {
             await chatClient.upsertUser({
                 id: botUserId,
                 name: 'Gemini Bot',
-                role: botUserRole,
+                role: 'user',
             });
         }
 
@@ -168,7 +184,6 @@ app.post('/user-chats', async (req: Request, res: Response): Promise<any> => {
         });
     }
 });
-
 
 
 app.post('/chat-history', async (req: Request, res: Response): Promise<any> => {
